@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: classcustomerviewschool
+  profiles:
+    active: development
+
+---
+
+  spring:
+    profiles: development
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        serviceId: configurationschool
