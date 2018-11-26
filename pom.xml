@@ -135,6 +135,7 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
+							<useSystemClassLoader>false</useSystemClassLoader>
 							<includes>
 								<include>**/*Tests.java</include>
 								<include>**/*Test.java</include>
@@ -159,6 +160,7 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-surefire-plugin</artifactId>
 						<configuration>
+							<useSystemClassLoader>false</useSystemClassLoader>
 							<includes>
 								<include>smoke/**/*Tests.java</include>
 								<include>smoke/**/*Test.java</include>
