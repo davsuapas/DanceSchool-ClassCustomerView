@@ -1,19 +1,12 @@
 package smoke;
 
-import com.elipcero.classcustomerviewschool.repository.CustomerClassRepository;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
@@ -24,17 +17,12 @@ import static org.assertj.core.api.BDDAssertions.then;
 import static org.awaitility.Awaitility.await;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = SmokeTestConfiguration.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
-@DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
-@ActiveProfiles(value = "smoke")
+@SpringBootTest(classes = ClassCustomerEventTest.class,
+        webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class ClassCustomerEventTest {
 
-    @Value("${stubrunner.url}") String stubRunnerUrl;
-
-    @Autowired private MongoOperations mongoOperations;
-    @Autowired private CustomerClassRepository customerClassRepository;
-
-    @Autowired private ConfigurableEnvironment env;
+    @Value("${stubrunner.url:http://localhost:8765}") String stubRunnerUrl;
+    @Value("${application.url:http://localhost:8084}") String applicationUrl;
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -43,24 +31,25 @@ public class ClassCustomerEventTest {
     @Test
     public void should_calculate_client_total_by_classrooom_and_set_class_by_client() {
 
-        mongoOperations.dropCollection("CustomerClass");
-        mongoOperations.dropCollection("ClassCustomerDayTotal");
+        String stubRunnerUrl = this.stubRunnerUrl + "/triggers/CustomerRegistered";
+        String applicationUrl = this.applicationUrl + "/smokeverifier";
 
-        String url = this.stubRunnerUrl + "/triggers/CustomerRegistered";
+        log.info("Url stub runner boot: " + stubRunnerUrl);
+        log.info("Url application: " + applicationUrl);
 
-        log.info("Mongo collections deletes");
-        log.info("Url stub runner boot: " + url);
+        this.clean(applicationUrl);
 
-        ResponseEntity<Map> response = this.restTemplate.postForEntity(url, "", Map.class);
+        ResponseEntity<Map> response = this.restTemplate.postForEntity(stubRunnerUrl, "", Map.class);
         then(response.getStatusCode().is2xxSuccessful()).isTrue();
 
-        log.info("Triggered customer event");
+        await().until(() -> countClasses(applicationUrl) == 1);
+    }
 
-        await().until( () ->
-             customerClassRepository
-                     .findById(1)
-                     .map((c) -> c.getClasses().isEmpty())
-                     .orElse(false)
-        );
+    private void clean(String applicationUrl) {
+        this.restTemplate.delete(applicationUrl);
+    }
+
+    private int countClasses(String applicationUrl) {
+        return this.restTemplate.getForObject(applicationUrl, Integer.class);
     }
 }

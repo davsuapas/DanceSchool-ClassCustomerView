@@ -17,6 +17,7 @@ public class OAuth2ResourceServerConfiguration extends ResourceServerConfigurerA
     public void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
+                .antMatchers("/smokeverifier").permitAll()
                 .anyRequest().authenticated();
     }
 
