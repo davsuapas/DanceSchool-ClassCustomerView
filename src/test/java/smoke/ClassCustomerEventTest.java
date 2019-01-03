@@ -21,8 +21,8 @@ import static org.awaitility.Awaitility.await;
         webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class ClassCustomerEventTest {
 
-    @Value("${stubrunner.url:http://localhost:8765}") String stubRunnerUrl;
-    @Value("${application.url:http://localhost:8084}") String applicationUrl;
+    @Value("${stubrunner.url:localhost:8765}") String stubRunnerUrl;
+    @Value("${application.url:localhost:8084}") String applicationUrl;
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -31,8 +31,8 @@ public class ClassCustomerEventTest {
     @Test
     public void should_calculate_client_total_by_classrooom_and_set_class_by_client() {
 
-        String stubRunnerUrl = this.stubRunnerUrl + "/triggers/CustomerRegistered";
-        String applicationUrl = this.applicationUrl + "/smokeverifier";
+        String stubRunnerUrl = "http://" + this.stubRunnerUrl + "/triggers/CustomerRegistered";
+        String applicationUrl = "http://" + this.applicationUrl + "/smokeverifier";
 
         log.info("Url stub runner boot: " + stubRunnerUrl);
         log.info("Url application: " + applicationUrl);
