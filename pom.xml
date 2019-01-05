@@ -32,6 +32,7 @@
 		<DOCKER_REGISTRY_ORGANIZATION>danceschool</DOCKER_REGISTRY_ORGANIZATION>
 		<DOCKER_SERVER_ID>docker-repo</DOCKER_SERVER_ID>
 		<DOCKER_REGISTRY_URL>https://index.docker.io/v1/</DOCKER_REGISTRY_URL>
+		<stubrunner.ids>com.elipcero.classcustomerschool:classcustomer-school:+:stubs:8762</stubrunner.ids>
 	</properties>
 
 	<!-- PIPELINE -->
